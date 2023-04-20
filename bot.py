@@ -1,9 +1,10 @@
 
 import discord, time, asyncio, pathlib, os, random
+from os.path import exists;
 from datetime import datetime
-from discord.ext import commands
-#import time
-#import asyncio
+from discord.ext import tasks, commands
+from setup import *;
+from TwitchFollowedList import *;
 
 
 intents = discord.Intents.default()
@@ -11,8 +12,23 @@ intents.message_content = True
 bot = commands.Bot(command_prefix='>', intents=intents)
 #client = discord.Client(intents=intents)
 
-TOKEN = "[PRIVATE]"
-channel_ID = 123456789 #[PRIVATE]
+config_object = ConfigParser()
+
+if not exists('config.ini'):
+    print("Running setup.")
+    runSetup()
+
+config_object.read("config.ini")
+
+config = config_object["bot_config"]
+TOKEN = config["bot_token"]
+channel_id = int(config["channel_id"])
+
+config = config_object["twitch_api_config"]
+client_id = config["client_id"]
+client_secret = config["client_secret"]
+access_token = config["access_token"]
+user_id = config["user_id"]
 
 
 @bot.command()
@@ -28,14 +44,8 @@ async def hello(ctx, s=None):
     else:
         await ctx.send('No')
 
-#shutdown bot
-@bot.command(aliases=['close'])
-@commands.is_owner()
-async def shutdown(ctx):
-    await ctx.bot.close()
 
-
-#send random image from "jp" folder
+#send random image from "pop" folder
 #command: >pop or >0_0
 @bot.command(aliases=['0_0'])
 async def pop(ctx):
@@ -46,7 +56,7 @@ async def pop(ctx):
 
 #random image from "im" folder
 @bot.command()
-async def image(ctx):
+async def im(ctx):
     #get current path
     path = pathlib.Path(__file__).parent.resolve()
     #await ctx.send(file=discord.File(str(path) + "\\jp\\1.png"))
@@ -69,10 +79,29 @@ async def on_message(message):
             await channel.send(time.strftime("%H") + ":" + time.strftime("%M"))
 
 
+@bot.command()
+@commands.is_owner()
+async def twitch_list(ctx):
+    twitch_list = getTwitchFollowedList(client_id, client_secret, access_token, user_id);
+    await ctx.channel.send(twitch_list)
+
+
+#shutdown bot
+@bot.command(aliases=['shutdown'])
+@commands.is_owner()
+async def close(self):
+    try:
+        await self.bot.close()
+    except Exception:
+        pass
+    #print("Bot Closed")
+    #sys.exit(0)
+
 @bot.event
 async def on_ready():
 
     print("bot:user ready == {0.user}".format(bot))
+    
     print("time module in use")
     while True:
         #send a message at a specific time
@@ -90,5 +119,6 @@ async def on_ready():
                 await asyncio.sleep(10)
         else:
             await asyncio.sleep(1800)
-
-bot.run(TOKEN)
+    
+if __name__ == "__main__":
+    bot.run(TOKEN)

@@ -1,2 +1,11 @@
-DiscordBot/.vs
-TwitchFollowedList/.vs
+.vs
+
+im/*
+pop/*
+
+config.ini
+
+*.sln
+*.pyproj
+
+__pycache__

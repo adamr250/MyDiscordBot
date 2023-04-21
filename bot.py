@@ -33,7 +33,7 @@ user_id = config["user_id"]
 
 @bot.command()
 async def ping(ctx):
-    channel = bot.get_channel(channel_ID)
+    channel = bot.get_channel(channel_id)
     await ctx.channel.send('pong')
 
 
@@ -64,6 +64,23 @@ async def im(ctx):
     await ctx.send(file=discord.File(str(path) + "\\im\\" + file))
 
 
+#zwraca diceNumStr losowych liczb z zakresu [1, diceWallNumStr]
+@bot.command()
+async def roll(ctx, diceNumStr, diceWallNumStr):
+    #TODO: ograniczyć do rzutów kośćmi, diceNumStr nie może być dowolne (d4, d6, d8, d12, d20)
+    #TODO: sprawdzanie, czy wejście jest poprawe
+    diceNum = int(diceNumStr);
+    diceWallNum = int(diceWallNumStr);
+    response = "["
+
+    for i in range(diceNum):
+        response = response + str(random.randint(1, diceWallNum)) + ",  "
+
+    response = response + "]"
+    await ctx.send(response)
+
+
+
 @bot.listen()
 async def on_message(message):
         # don't respond to ourselves
@@ -75,7 +92,7 @@ async def on_message(message):
         if message.content == 'hello there':
             await message.channel.send('General Kenobi')
         if message.content == 'time':
-            channel = bot.get_channel(channel_ID)
+            channel = bot.get_channel(channel_id)
             await channel.send(time.strftime("%H") + ":" + time.strftime("%M"))
 
 
@@ -111,7 +128,7 @@ async def on_ready():
             if current_time == "16:30":
                 await asyncio.sleep(1)
                 #print("time module ended")
-                channel = bot.get_channel(channel_ID)
+                channel = bot.get_channel(channel_id)
                 await channel.send("@here " + current_time)
                 await asyncio.sleep(69) #nice
                 break

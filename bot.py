@@ -5,6 +5,7 @@ from datetime import datetime
 from discord.ext import tasks, commands
 from setup import *;
 from TwitchFollowedList import *;
+from Dice import *;
 
 
 intents = discord.Intents.default()
@@ -66,18 +67,11 @@ async def im(ctx):
 
 #zwraca diceNumStr losowych liczb z zakresu [1, diceWallNumStr]
 @bot.command()
-async def roll(ctx, diceNumStr, diceWallNumStr):
-    #TODO: ograniczyć do rzutów kośćmi, diceNumStr nie może być dowolne (d4, d6, d8, d12, d20)
+async def roll(ctx, roll):
+    #TODO: ograniczyć do rzutów kośćmi, diceNumStr nie może być dowolne (d4, d6, d8, d10, d12, d20)
     #TODO: sprawdzanie, czy wejście jest poprawe
-    diceNum = int(diceNumStr);
-    diceWallNum = int(diceWallNumStr);
-    response = "["
-
-    for i in range(diceNum):
-        response = response + str(random.randint(1, diceWallNum)) + ",  "
-
-    response = response + "]"
-    await ctx.send(response)
+    result = diceRoll(roll)
+    await ctx.send(result)
 
 
 

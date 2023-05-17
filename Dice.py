@@ -1,6 +1,22 @@
 
 import random
 
+def addValues(a, b):
+    return a+b
+
+def subctractValues(a, b):
+    if(a <= b):
+        return 0
+    return a-b
+
+def multiplyValues(a, b):
+    return a*b
+
+def divideValues(a, b):
+    return a//b
+
+modifyValue = {"+":addValues, "-":subctractValues, "*":multiplyValues, "/":divideValues}
+
 def diceRoll(roll):
     helpMessage = """>roll XdY+Z 
     X - number of rolls;
@@ -8,6 +24,8 @@ def diceRoll(roll):
     Z - number added to all rolls (optional);
     Examples: 1d4+2, 3d20"""
     diceSizes = [4, 6, 8, 10, 12, 20]
+    mathSymbols = ["+", "-", "*", "/"]
+
 
     if roll == "help":
         return helpMessage
@@ -20,38 +38,40 @@ def diceRoll(roll):
     numOfRolls = roll[:found_d]
     roll = roll[found_d+1:]
 
-    foundPlus = roll.find("+")
-    addValue = "0"
-    if(foundPlus == -1):
-        rollRange = roll
-        #print("roll range: ", rollRange)
-    else:
-        rollRange = roll[:foundPlus]
-        addValue = roll[foundPlus+1:]
-        #print("roll range plus: ", rollRange)
+    modifierValue = "0"
+    modifier = "+"
+    for m in mathSymbols:
+        foundMath = roll.find(m)
+        if(foundMath != -1):
+            modifier = m
+            rollRange = roll[:foundMath]
+            modifierValue = roll[foundMath+1:]
+            break
+        else:
+            rollRange = roll
 
-    inputCheck = numOfRolls.isnumeric() + rollRange.isnumeric() + addValue.isnumeric()
-    #print(numOfRolls.isnumeric(), " + ", rollRange.isnumeric(), " + ", addValue.isnumeric())
+
+    inputCheck = numOfRolls.isnumeric() + rollRange.isnumeric() + modifierValue.isnumeric()
 
     if(inputCheck != 3):
         return "Wrong input: not a number"
 
     numOfRolls = int(numOfRolls)
     rollRange = int(rollRange)
-    addValue = int(addValue)
+    modifierValue = int(modifierValue)
 
     if not rollRange in diceSizes:
         return "Wrong input: dice size"
     
     result = "["
     for i in range(numOfRolls):
-        result = result + str(random.randint(1, rollRange) + addValue)
+        #result = result + str(random.randint(1, rollRange) + modifierValue)
+        result = result + str(modifyValue[modifier](random.randint(1, rollRange),  modifierValue))
         if(i != numOfRolls-1):
             result = result + ", "
     result = result + "]"
 
     return result
 
-#print(diceRoll("10d4+2"))
-#print(diceRoll("10d4+2"))
-#print(diceRoll("4d4+1"))
+if __name__ == "__main__":
+    print(diceRoll("2d20"))

@@ -89,11 +89,18 @@ async def on_message(message):
 
 
 #getTwitchFollowedList
-@bot.command()
+@bot.command(aliases=['t_list'])
 @commands.is_owner()
 async def twitch_list(ctx):
     twitch_list = getTwitchFollowedList(client_id, client_secret, access_token, user_id);
-    await ctx.channel.send(twitch_list)
+    embed=discord.Embed(title="Twitch Followed List")
+    #await ctx.channel.send(twitch_list)
+    embed.add_field(name="CHANNEL", value=twitch_list[0], inline=True)
+    #embed.add_field(name="", value="", inline=True)
+    embed.add_field(name="GAME", value=twitch_list[1], inline=True)
+    #embed.add_field(name="", value="", inline=True)
+    embed.add_field(name="VIEWERS", value=twitch_list[2], inline=True)
+    await ctx.channel.send(embed=embed)
 
 
 #shutdown bot

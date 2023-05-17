@@ -18,14 +18,13 @@ def divideValues(a, b):
 modifyValue = {"+":addValues, "-":subctractValues, "*":multiplyValues, "/":divideValues}
 
 def diceRoll(roll):
-    helpMessage = """>roll XdY+Z 
-    X - number of rolls;
-    Y - dice size, possible Y values: 4, 6, 8, 10, 12, 20;
-    Z - number added to all rolls (optional);
+    helpMessage = """>roll XdY
+    X - number of rolls
+    Y - dice size, possible Y values: 4, 6, 8, 10, 12, 20
+    +, -, *, / (optional) - modify value
     Examples: 1d4+2, 3d20"""
     diceSizes = [4, 6, 8, 10, 12, 20]
     mathSymbols = ["+", "-", "*", "/"]
-
 
     if roll == "help":
         return helpMessage
@@ -38,6 +37,7 @@ def diceRoll(roll):
     numOfRolls = roll[:found_d]
     roll = roll[found_d+1:]
 
+    #Szukanie operacji algebraicznych (+, -, *, /)
     modifierValue = "0"
     modifier = "+"
     for m in mathSymbols:
@@ -63,6 +63,8 @@ def diceRoll(roll):
     if not rollRange in diceSizes:
         return "Wrong input: dice size"
     
+
+    #Generowanie rzutow i zapisywanie w string
     result = "["
     for i in range(numOfRolls):
         #result = result + str(random.randint(1, rollRange) + modifierValue)

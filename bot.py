@@ -65,16 +65,14 @@ async def im(ctx):
     await ctx.send(file=discord.File(str(path) + "\\im\\" + file))
 
 
-#zwraca diceNumStr losowych liczb z zakresu [1, diceWallNumStr]
+#symuluje rzuty kością na wzróz DnD
 @bot.command()
 async def roll(ctx, roll):
-    #TODO: ograniczyć do rzutów kośćmi, diceNumStr nie może być dowolne (d4, d6, d8, d10, d12, d20)
-    #TODO: sprawdzanie, czy wejście jest poprawe
     result = diceRoll(roll)
     await ctx.send(result)
 
 
-
+#proste odpowiedzi
 @bot.listen()
 async def on_message(message):
         # don't respond to ourselves
@@ -90,6 +88,7 @@ async def on_message(message):
             await channel.send(time.strftime("%H") + ":" + time.strftime("%M"))
 
 
+#getTwitchFollowedList
 @bot.command()
 @commands.is_owner()
 async def twitch_list(ctx):

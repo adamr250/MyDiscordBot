@@ -17,7 +17,9 @@ def divideValues(a, b):
 
 modifyValue = {"+":addValues, "-":subctractValues, "*":multiplyValues, "/":divideValues}
 
-def diceRoll(roll):
+#TODO: wypisywanie sumy rzutów, modyfikowanie (+,-,*,/) pojedyńczych rzutów lub sumy
+
+def diceRoll(diceRoll):
     helpMessage = """>roll XdY
     X - number of rolls
     Y - dice size, possible Y values: 4, 6, 8, 10, 12, 20
@@ -26,30 +28,39 @@ def diceRoll(roll):
     diceSizes = [4, 6, 8, 10, 12, 20]
     mathSymbols = ["+", "-", "*", "/"]
 
-    if roll == "help":
+    if diceRoll == "help":
         return helpMessage
     
 
-    found_d = roll.find("d")
+    found_d = diceRoll.find("d")
     if(found_d == -1):
         return "Wrong input: wrong input"
     
-    numOfRolls = roll[:found_d]
-    roll = roll[found_d+1:]
+    numOfRolls = diceRoll[:found_d]
+    rollRange = diceRoll[found_d+1:]
 
     #Szukanie operacji algebraicznych (+, -, *, /)
+    modifyTotal = False
     modifierValue = "0"
     modifier = "+"
     for m in mathSymbols:
-        foundMath = roll.find(m)
+        foundMath = rollRange.find(m)
         if(foundMath != -1):
             modifier = m
-            rollRange = roll[:foundMath]
-            modifierValue = roll[foundMath+1:]
+            rollRange = rollRange[:foundMath]
+            modifierValue = rollRange[foundMath+1:]
+            foundHash = modifierValue.find("#")
+            if(foundHash != -1):
+                modifierValue = modifierValue[:foundHash]
+                afterHashOption = modifierValue[foundHash:]
+                if(afterHashOption == "#t"):
+                    modifyTotal = True
+                elif(afterHashOption == "#e"):
+                    modifyTotal = False
+                else:
+                    return "Wrong input: wrong option after #"
+            
             break
-        else:
-            rollRange = roll
-
 
     inputCheck = numOfRolls.isnumeric() + rollRange.isnumeric() + modifierValue.isnumeric()
 
@@ -65,13 +76,28 @@ def diceRoll(roll):
     
 
     #Generowanie rzutow i zapisywanie w string
-    result = "["
+    totalSum = 0
+    result = "rolls: ["
     for i in range(numOfRolls):
         #result = result + str(random.randint(1, rollRange) + modifierValue)
-        result = result + str(modifyValue[modifier](random.randint(1, rollRange),  modifierValue))
+        if(foundMath == -1):
+            roll = random.randint(1, rollRange)
+        elif(modifyTotal == False):
+            roll = modifyValue[modifier](random.randint(1, rollRange),  modifierValue)
+            result = result + str(roll)
+            totalSum = totalSum + roll
+        else:
+            roll = random.randint(1, rollRange)
+            result = result + str(roll)
+            totalSum = totalSum + roll
+
         if(i != numOfRolls-1):
             result = result + ", "
-    result = result + "]"
+
+    if(modifyTotal == True):
+        result = result + "]\tsum: [" + str(sum) + "]"
+    else:
+        result = result + "]\tsum: [" + str(sum) + "]"
 
     return result
 
